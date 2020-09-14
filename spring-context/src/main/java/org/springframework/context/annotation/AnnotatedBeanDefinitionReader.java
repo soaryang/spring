@@ -246,6 +246,7 @@ public class AnnotatedBeanDefinitionReader {
 		String generateBeanName = this.beanNameGenerator.generateBeanName(annotatedGenericBeanDefinition, this.registry);
 		String beanName = (name != null ? name : generateBeanName);
 
+		//处理通用的注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(annotatedGenericBeanDefinition);
 
 		if (qualifiers != null) {
