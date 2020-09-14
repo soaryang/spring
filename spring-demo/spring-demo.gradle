@@ -1,0 +1,12 @@
+description = "Spring demo"
+
+dependencies {
+    compile(project(":spring-beans"))
+    compile(project(":spring-core"))
+    compile(project(":spring-messaging"))
+    compile(project(":spring-tx"))
+    compile(project(":spring-context"))
+    compile(project(":spring-oxm"))
+    compile(project(":spring-aop"))
+    compile(project(":spring-aspects"))
+}
