@@ -259,19 +259,27 @@ public class AnnotationConfigUtils {
 			AbstractBeanDefinition absBd = (AbstractBeanDefinition) annotatedBeanDefinition;
 			AnnotationAttributes role = attributesFor(metadata, Role.class);
 			if (role != null) {
-				absBd.setRole(role.getNumber("value").intValue());
+				int roleValue = role.getNumber("value").intValue();
+				absBd.setRole(roleValue);
 			}
 			AnnotationAttributes description = attributesFor(metadata, Description.class);
 			if (description != null) {
-				absBd.setDescription(description.getString("value"));
+				String descriptionStr = description.getString("value");
+				absBd.setDescription(descriptionStr);
 			}
 		}
 	}
 
-	static BeanDefinitionHolder applyScopedProxyMode(
-			ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
-
+	/**
+	 * @param metadata   作用域
+	 * @param definition BeanDefinition 对象
+	 * @param registry   仓库
+	 * @return
+	 */
+	static BeanDefinitionHolder applyScopedProxyMode(ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
+		//TODO:
 		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
+		//默认：ScopedProxyMode.NO
 		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
 			return definition;
 		}
