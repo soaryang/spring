@@ -608,7 +608,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
-		getEnvironment().validateRequiredProperties();
+		ConfigurableEnvironment configurableEnvironment = getEnvironment();
+		configurableEnvironment.validateRequiredProperties();
 
 		// Store pre-refresh ApplicationListeners...
 		if (this.earlyApplicationListeners == null) {
@@ -659,11 +660,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
 		beanFactory.setBeanClassLoader(getClassLoader());
-		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
-		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
+
+		StandardBeanExpressionResolver standardBeanExpressionResolver = new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader());
+		beanFactory.setBeanExpressionResolver(standardBeanExpressionResolver);
+
+		ConfigurableEnvironment configurableEnvironmentTemp = getEnvironment();
+		ResourceEditorRegistrar resourceEditorRegistrar = new ResourceEditorRegistrar(this, configurableEnvironmentTemp);
+		beanFactory.addPropertyEditorRegistrar(resourceEditorRegistrar);
 
 		// Configure the bean factory with context callbacks.
-		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		ApplicationContextAwareProcessor applicationContextAwareProcessor = new ApplicationContextAwareProcessor(this);
+		beanFactory.addBeanPostProcessor(applicationContextAwareProcessor);
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -679,13 +686,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
-		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
+		ApplicationListenerDetector applicationListenerDetector = new ApplicationListenerDetector(this);
+		beanFactory.addBeanPostProcessor(applicationListenerDetector);
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
 		if (beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
-			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+
+			LoadTimeWeaverAwareProcessor loadTimeWeaverAwareProcessor = new LoadTimeWeaverAwareProcessor(beanFactory);
+			beanFactory.addBeanPostProcessor(loadTimeWeaverAwareProcessor);
+
 			// Set a temporary ClassLoader for type matching.
-			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
+			ContextTypeMatchClassLoader contextTypeMatchClassLoader =new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader());
+			beanFactory.setTempClassLoader(contextTypeMatchClassLoader);
 		}
 
 		// Register default environment beans.

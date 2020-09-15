@@ -75,7 +75,6 @@ import java.util.function.Supplier;
  * which are easier to set up - but less flexible, since you can just use standard
  * resource locations for XML bean definitions, rather than mixing arbitrary bean
  * definition formats. The equivalent in a web environment is
- * {@link org.springframework.web.context.support.XmlWebApplicationContext}.
  *
  * <p>For custom application context implementations that are supposed to read
  * special bean definition formats in a refreshable manner, consider deriving
@@ -272,7 +271,9 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 			throw new IllegalStateException(
 					"GenericApplicationContext does not support multiple refresh attempts: just call 'refresh' once");
 		}
-		this.beanFactory.setSerializationId(getId());
+		String serializationId = getId();
+		logger.info("BeanFactory serializationId:"+serializationId);
+		this.beanFactory.setSerializationId(serializationId);
 	}
 
 	@Override

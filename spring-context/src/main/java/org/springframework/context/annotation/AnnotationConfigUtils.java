@@ -57,7 +57,6 @@ import java.util.Set;
  * @see CommonAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor
  * @see org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor
- * @see org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor
  * @since 2.5
  */
 public class AnnotationConfigUtils {
@@ -256,16 +255,16 @@ public class AnnotationConfigUtils {
 			annotatedBeanDefinition.setDependsOn(dependsOn.getStringArray("value"));
 		}
 		if (annotatedBeanDefinition instanceof AbstractBeanDefinition) {
-			AbstractBeanDefinition absBd = (AbstractBeanDefinition) annotatedBeanDefinition;
+			AbstractBeanDefinition abstractBeanDefinition = (AbstractBeanDefinition) annotatedBeanDefinition;
 			AnnotationAttributes role = attributesFor(metadata, Role.class);
 			if (role != null) {
 				int roleValue = role.getNumber("value").intValue();
-				absBd.setRole(roleValue);
+				abstractBeanDefinition.setRole(roleValue);
 			}
 			AnnotationAttributes description = attributesFor(metadata, Description.class);
 			if (description != null) {
 				String descriptionStr = description.getString("value");
-				absBd.setDescription(descriptionStr);
+				abstractBeanDefinition.setDescription(descriptionStr);
 			}
 		}
 	}

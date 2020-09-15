@@ -43,12 +43,12 @@ task genCastor {
             castor(types: "j2", warnings: false, file: orderSchema, todir: sourcesDir,
                     package: "org.springframework.oxm.castor", properties: castorBuilderProperties)*/
 
-            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
-                    debugLevel: "lines,vars,source", classpath: configurations.castor.asPath) {
-                src(path: sourcesDir)
-                include(name: "**/*.java")
-                include(name: "*.java")
-            }
+//            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
+//                    debugLevel: "lines,vars,source", classpath: configurations.castor.asPath) {
+//                src(path: sourcesDir)
+//                include(name: "**/*.java")
+//                include(name: "*.java")
+//            }
 
             copy(todir: classesDir) {
                 fileset(dir: sourcesDir, erroronmissingdir: false) {
@@ -73,18 +73,18 @@ task genJaxb {
             mkdir(dir: sourcesDir)
             mkdir(dir: classesDir)
 
-            xjc(destdir: sourcesDir, schema: flightSchema,
-                    package: "org.springframework.oxm.jaxb.test") {
-                produces(dir: sourcesDir, includes: "**/*.java")
-            }
+//            xjc(destdir: sourcesDir, schema: flightSchema,
+//                    package: "org.springframework.oxm.jaxb.test") {
+//                produces(dir: sourcesDir, includes: "**/*.java")
+//            }
 
-            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
-                    debugLevel: "lines,vars,source",
-                    classpath: configurations.xjc.asPath) {
-                src(path: sourcesDir)
-                include(name: "**/*.java")
-                include(name: "*.java")
-            }
+//            javac(destdir: classesDir, source: 1.8, target: 1.8, debug: true,
+//                    debugLevel: "lines,vars,source",
+//                    classpath: configurations.xjc.asPath) {
+//                src(path: sourcesDir)
+//                include(name: "**/*.java")
+//                include(name: "*.java")
+//            }
 
             copy(todir: classesDir) {
                 fileset(dir: sourcesDir, erroronmissingdir: false) {

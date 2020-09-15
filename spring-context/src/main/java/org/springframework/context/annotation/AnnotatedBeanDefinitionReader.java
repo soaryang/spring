@@ -256,7 +256,8 @@ public class AnnotatedBeanDefinitionReader {
 				} else if (Lazy.class == qualifier) {
 					annotatedGenericBeanDefinition.setLazyInit(true);
 				} else {
-					annotatedGenericBeanDefinition.addQualifier(new AutowireCandidateQualifier(qualifier));
+					AutowireCandidateQualifier autowireCandidateQualifier = new AutowireCandidateQualifier(qualifier);
+					annotatedGenericBeanDefinition.addQualifier(autowireCandidateQualifier);
 				}
 			}
 		}
