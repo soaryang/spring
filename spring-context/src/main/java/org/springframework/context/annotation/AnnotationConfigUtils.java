@@ -299,7 +299,8 @@ public class AnnotationConfigUtils {
 	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata,
 															 Class<?> containerClass, Class<?> annotationClass) {
 
-		return attributesForRepeatable(metadata, containerClass.getName(), annotationClass.getName());
+		Set<AnnotationAttributes> annotationAttributesSet = attributesForRepeatable(metadata, containerClass.getName(), annotationClass.getName());
+		return annotationAttributesSet;
 	}
 
 	@SuppressWarnings("unchecked")

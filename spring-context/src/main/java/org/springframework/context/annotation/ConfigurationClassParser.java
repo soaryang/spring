@@ -142,20 +142,22 @@ class ConfigurationClassParser {
 		this.deferredImportSelectors = new LinkedList<>();
 
 		for (BeanDefinitionHolder holder : configCandidates) {
-			BeanDefinition bd = holder.getBeanDefinition();
+			BeanDefinition beanDefinition = holder.getBeanDefinition();
 			try {
-				if (bd instanceof AnnotatedBeanDefinition) {
-					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
-				} else if (bd instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) bd).hasBeanClass()) {
-					parse(((AbstractBeanDefinition) bd).getBeanClass(), holder.getBeanName());
+				if (beanDefinition instanceof AnnotatedBeanDefinition) {
+					//获取BeanDefinition的注解
+					AnnotationMetadata metadata = ((AnnotatedBeanDefinition) beanDefinition).getMetadata();
+					String beanName = holder.getBeanName();
+					parse(metadata, beanName);
+				} else if (beanDefinition instanceof AbstractBeanDefinition && ((AbstractBeanDefinition) beanDefinition).hasBeanClass()) {
+					parse(((AbstractBeanDefinition) beanDefinition).getBeanClass(), holder.getBeanName());
 				} else {
-					parse(bd.getBeanClassName(), holder.getBeanName());
+					parse(beanDefinition.getBeanClassName(), holder.getBeanName());
 				}
 			} catch (BeanDefinitionStoreException ex) {
 				throw ex;
 			} catch (Throwable ex) {
-				throw new BeanDefinitionStoreException(
-						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
+				throw new BeanDefinitionStoreException("Failed to parse configuration class [" + beanDefinition.getBeanClassName() + "]", ex);
 			}
 		}
 
@@ -173,7 +175,8 @@ class ConfigurationClassParser {
 	}
 
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
-		processConfigurationClass(new ConfigurationClass(metadata, beanName));
+		ConfigurationClass configurationClass = new ConfigurationClass(metadata, beanName);
+		processConfigurationClass(configurationClass);
 	}
 
 	/**
@@ -217,8 +220,7 @@ class ConfigurationClassParser {
 		SourceClass sourceClass = asSourceClass(configClass);
 		do {
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass);
-		}
-		while (sourceClass != null);
+		} while (sourceClass != null);
 
 		this.configurationClasses.put(configClass, configClass);
 	}
@@ -240,9 +242,10 @@ class ConfigurationClassParser {
 		processMemberClasses(configClass, sourceClass);
 
 		// Process any @PropertySource annotations
-		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
+		Set<AnnotationAttributes> attributesForRepeatable = AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
-				org.springframework.context.annotation.PropertySource.class)) {
+				org.springframework.context.annotation.PropertySource.class);
+		for (AnnotationAttributes propertySource : attributesForRepeatable) {
 			if (this.environment instanceof ConfigurableEnvironment) {
 				processPropertySource(propertySource);
 			} else {
@@ -252,14 +255,11 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @ComponentScan annotations
-		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
-				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
-		if (!componentScans.isEmpty() &&
-				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
+		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
+		if (!componentScans.isEmpty() && !this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
-				Set<BeanDefinitionHolder> scannedBeanDefinitions =
-						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
+				Set<BeanDefinitionHolder> scannedBeanDefinitions = this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
 				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
 					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
