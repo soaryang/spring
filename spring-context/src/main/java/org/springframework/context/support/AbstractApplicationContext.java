@@ -736,6 +736,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 1.getBeanFactoryPostProcessors(): 拿到当前应用上下文beanFactoryPostProcessors变量中的值
 		//TODO: 2.invokeBeanFactoryPostProcessors: 实例化并调用所有已注册的BeanFactoryPostProcessor
 		List<BeanFactoryPostProcessor> beanFactoryPostProcessors = getBeanFactoryPostProcessors();
+		//将后置处理器放入到beanFactory中
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, beanFactoryPostProcessors);
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime

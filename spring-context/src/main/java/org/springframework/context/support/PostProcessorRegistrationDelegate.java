@@ -78,6 +78,7 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			//通过BeanDefinitionRegistryPostProcessor 类型获取 postProcessorNames 名称
 			String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -100,15 +101,19 @@ final class PostProcessorRegistrationDelegate {
 					processedBeans.add(ppName);
 				}
 			}
+			//排序
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
 			registryProcessors.addAll(currentRegistryProcessors);
+			//BeanDefinitionRegistryPostProcessor 放入到 registry
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+			//清理currentRegistryProcessors
 			currentRegistryProcessors.clear();
 
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
 			boolean reiterate = true;
 			while (reiterate) {
 				reiterate = false;
+				//通过里类型获取postProcessorNames
 				postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 				for (String ppName : postProcessorNames) {
 					if (!processedBeans.contains(ppName)) {
@@ -117,9 +122,12 @@ final class PostProcessorRegistrationDelegate {
 						reiterate = true;
 					}
 				}
+				//派系
 				sortPostProcessors(currentRegistryProcessors, beanFactory);
 				registryProcessors.addAll(currentRegistryProcessors);
+				//将currentRegistryProcessors 放入到registry
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+				//清理currentRegistryProcessors
 				currentRegistryProcessors.clear();
 			}
 
