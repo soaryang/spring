@@ -120,6 +120,7 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		//进行扫描获取BeanDefinitionHolder
 		Set<BeanDefinitionHolder> beanDefinitionHolderSet = scanner.doScan(StringUtils.toStringArray(basePackages));
 		return beanDefinitionHolderSet;
 	}

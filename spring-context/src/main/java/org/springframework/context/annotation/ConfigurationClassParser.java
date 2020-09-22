@@ -242,6 +242,8 @@ class ConfigurationClassParser {
 		processMemberClasses(configClass, sourceClass);
 
 		// Process any @PropertySource annotations
+		//PropertySource 处理properties 配置文件
+		//@PropertySource(value = {"classpath:user.properties"})
 		Set<AnnotationAttributes> attributesForRepeatable = AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class);
@@ -255,28 +257,34 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @ComponentScan annotations
+		//此处处理ComponentScans 能扫描到的包
 		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
 		if (!componentScans.isEmpty() && !this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
+				//通过componentScan 的value 获取这个包下面有注解的类
 				Set<BeanDefinitionHolder> scannedBeanDefinitions = this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
-				for (BeanDefinitionHolder holder : scannedBeanDefinitions) {
-					BeanDefinition bdCand = holder.getBeanDefinition().getOriginatingBeanDefinition();
-					if (bdCand == null) {
-						bdCand = holder.getBeanDefinition();
+				for (BeanDefinitionHolder beanDefinitionHolder : scannedBeanDefinitions) {
+					BeanDefinition beanDefinition = beanDefinitionHolder.getBeanDefinition().getOriginatingBeanDefinition();
+					if (beanDefinition == null) {
+						beanDefinition = beanDefinitionHolder.getBeanDefinition();
 					}
-					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
-						parse(bdCand.getBeanClassName(), holder.getBeanName());
+					if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDefinition, this.metadataReaderFactory)) {
+						parse(beanDefinition.getBeanClassName(), beanDefinitionHolder.getBeanName());
 					}
 				}
 			}
 		}
 
 		// Process any @Import annotations
+		//@Import 逻辑处理
+		//@Import({TestDemo2.class,Myclass.class}) 导入类
 		processImports(configClass, sourceClass, getImports(sourceClass), true);
 
 		// Process any @ImportResource annotations
+		// 处理ImportResource 注解导入xml
+		// 例子：@ImportResource({"classpath*:applicationContext.xml"})
 		AnnotationAttributes importResource = AnnotationConfigUtils.attributesFor(sourceClass.getMetadata(), ImportResource.class);
 		if (importResource != null) {
 			String[] resources = importResource.getStringArray("locations");
@@ -288,9 +296,11 @@ class ConfigurationClassParser {
 		}
 
 		// Process individual @Bean methods
+		//处理 @Bean
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
-			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
+			BeanMethod beanMethod = new BeanMethod(methodMetadata, configClass);
+			configClass.addBeanMethod(beanMethod);
 		}
 
 		// Process default methods on interfaces
@@ -299,8 +309,7 @@ class ConfigurationClassParser {
 		// Process superclass, if any
 		if (sourceClass.getMetadata().hasSuperClass()) {
 			String superclass = sourceClass.getMetadata().getSuperClassName();
-			if (superclass != null && !superclass.startsWith("java") &&
-					!this.knownSuperclasses.containsKey(superclass)) {
+			if (superclass != null && !superclass.startsWith("java") && !this.knownSuperclasses.containsKey(superclass)) {
 				this.knownSuperclasses.put(superclass, configClass);
 				// Superclass found, return its annotation metadata and recurse
 				return sourceClass.getSuperClass();
@@ -361,15 +370,16 @@ class ConfigurationClassParser {
 	 */
 	private Set<MethodMetadata> retrieveBeanMethodMetadata(SourceClass sourceClass) {
 		AnnotationMetadata original = sourceClass.getMetadata();
+		//获取有Bean 注解的方法
 		Set<MethodMetadata> beanMethods = original.getAnnotatedMethods(Bean.class.getName());
 		if (beanMethods.size() > 1 && original instanceof StandardAnnotationMetadata) {
 			// Try reading the class file via ASM for deterministic declaration order...
 			// Unfortunately, the JVM's standard reflection returns methods in arbitrary
 			// order, even between different runs of the same application on the same JVM.
 			try {
-				AnnotationMetadata asm =
-						this.metadataReaderFactory.getMetadataReader(original.getClassName()).getAnnotationMetadata();
-				Set<MethodMetadata> asmMethods = asm.getAnnotatedMethods(Bean.class.getName());
+				String className = original.getClassName();
+				AnnotationMetadata annotationMetadata = this.metadataReaderFactory.getMetadataReader(className).getAnnotationMetadata();
+				Set<MethodMetadata> asmMethods = annotationMetadata.getAnnotatedMethods(Bean.class.getName());
 				if (asmMethods.size() >= beanMethods.size()) {
 					Set<MethodMetadata> selectedMethods = new LinkedHashSet<>(asmMethods.size());
 					for (MethodMetadata asmMethod : asmMethods) {
