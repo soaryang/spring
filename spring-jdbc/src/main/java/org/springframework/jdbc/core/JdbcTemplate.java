@@ -407,6 +407,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
 			throw translateException("StatementCallback", sql, ex);
 		} finally {
 			JdbcUtils.closeStatement(stmt);
+			//释放连接
 			DataSourceUtils.releaseConnection(con, getDataSource());
 		}
 	}

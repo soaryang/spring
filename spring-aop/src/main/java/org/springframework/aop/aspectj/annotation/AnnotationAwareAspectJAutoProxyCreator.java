@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
+ * 完成sping AOP 改变bean 生成代理对象。
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *

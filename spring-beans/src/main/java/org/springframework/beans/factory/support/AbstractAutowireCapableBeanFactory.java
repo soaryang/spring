@@ -381,15 +381,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	@Override
-	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-			throws BeansException {
-
+	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
 		Object result = existingBean;
+
+		//获取后置处理器
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			/**
-			 *
 			 * AOP 和事务都会在这里生成代理对象。
 			 * @EnableAspectJAutoProxy 开启代理 AbstractAutoProxyCreator 后置处理器来生成代理类
+			 * 执行后置处理器中的方法
 			 */
 			Object current = processor.postProcessAfterInitialization(result, beanName);
 			if (current == null) {
@@ -1640,11 +1640,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
 			//调用我们的bean的后置处理器进行PostProcessorsBeforeInitialization 方法 @PostConstruct 方法
+			//spring 执行postConstruct
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
 		try {
-			//调用初始化方法
+			//调用初始化方法InitializtionBean (接口)
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		} catch (Throwable ex) {
 			throw new BeanCreationException((mbd != null ? mbd.getResourceDescription() : null),
