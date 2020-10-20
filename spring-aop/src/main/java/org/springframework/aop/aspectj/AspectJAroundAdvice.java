@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package org.springframework.aop.aspectj;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.weaver.tools.JoinPointMatch;
-import org.springframework.aop.ProxyMethodInvocation;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
+import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.lang.Nullable;
 
 /**
  * Spring AOP around advice (MethodInterceptor) that wraps
@@ -59,6 +61,7 @@ public class AspectJAroundAdvice extends AbstractAspectJAdvice implements Method
 	}
 
 	@Override
+	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		if (!(mi instanceof ProxyMethodInvocation)) {
 			throw new IllegalStateException("MethodInvocation is not a Spring ProxyMethodInvocation: " + mi);
@@ -72,9 +75,8 @@ public class AspectJAroundAdvice extends AbstractAspectJAdvice implements Method
 	/**
 	 * Return the ProceedingJoinPoint for the current invocation,
 	 * instantiating it lazily if it hasn't been bound to the thread already.
-	 *
 	 * @param rmi the current Spring AOP ReflectiveMethodInvocation,
-	 *            which we'll use for attribute binding
+	 * which we'll use for attribute binding
 	 * @return the ProceedingJoinPoint to make available to advice methods
 	 */
 	protected ProceedingJoinPoint lazyGetProceedingJoinPoint(ProxyMethodInvocation rmi) {

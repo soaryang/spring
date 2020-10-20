@@ -1,9 +1,9 @@
 /**
- * Support for AOP-based scoping of target objects, with configurable backend.
+ * Useful generic {@code java.util.function} helper classes.
  */
 @NonNullApi
 @NonNullFields
-package org.springframework.aop.scope;
+package org.springframework.util.function;
 
 import org.springframework.lang.NonNullApi;
 import org.springframework.lang.NonNullFields;

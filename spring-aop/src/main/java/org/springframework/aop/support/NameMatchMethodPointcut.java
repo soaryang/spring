@@ -16,14 +16,14 @@
 
 package org.springframework.aop.support;
 
-import org.springframework.lang.Nullable;
-import org.springframework.util.PatternMatchUtils;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.lang.Nullable;
+import org.springframework.util.PatternMatchUtils;
 
 /**
  * Pointcut bean for simple method name matches, as an alternative to regexp patterns.
@@ -33,8 +33,8 @@ import java.util.List;
  * @author Juergen Hoeller
  * @author Rod Johnson
  * @author Rob Harrop
- * @see #isMatch
  * @since 11.02.2004
+ * @see #isMatch
  */
 @SuppressWarnings("serial")
 public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut implements Serializable {
@@ -45,7 +45,6 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 	/**
 	 * Convenience method when we have only a single method name to match.
 	 * Use either this method or {@code setMappedNames}, not both.
-	 *
 	 * @see #setMappedNames
 	 */
 	public void setMappedName(String mappedName) {
@@ -67,8 +66,7 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 	 * before a proxy is used.
 	 * <p><b>NB:</b> This method does not work after the proxy is in
 	 * use, as advice chains will be cached.
-	 *
-	 * @param name name of the additional method that will match
+	 * @param name the name of the additional method that will match
 	 * @return this pointcut to allow for multiple additions in one line
 	 */
 	public NameMatchMethodPointcut addMethodName(String name) {
@@ -78,7 +76,7 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 
 
 	@Override
-	public boolean matches(Method method, @Nullable Class<?> targetClass) {
+	public boolean matches(Method method, Class<?> targetClass) {
 		for (String mappedName : this.mappedNames) {
 			if (mappedName.equals(method.getName()) || isMatch(method.getName(), mappedName)) {
 				return true;
@@ -91,7 +89,6 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 	 * Return if the given method name matches the mapped name.
 	 * <p>The default implementation checks for "xxx*", "*xxx" and "*xxx*" matches,
 	 * as well as direct equality. Can be overridden in subclasses.
-	 *
 	 * @param methodName the method name of the class
 	 * @param mappedName the name in the descriptor
 	 * @return if the names match
@@ -103,7 +100,7 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		return (this == other || (other instanceof NameMatchMethodPointcut &&
 				this.mappedNames.equals(((NameMatchMethodPointcut) other).mappedNames)));
 	}
@@ -111,6 +108,11 @@ public class NameMatchMethodPointcut extends StaticMethodMatcherPointcut impleme
 	@Override
 	public int hashCode() {
 		return this.mappedNames.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + ": " + this.mappedNames;
 	}
 
 }

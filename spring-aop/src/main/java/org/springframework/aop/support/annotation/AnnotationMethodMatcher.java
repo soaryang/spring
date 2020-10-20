@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package org.springframework.aop.support.annotation;
 
-import org.springframework.aop.support.AopUtils;
-import org.springframework.aop.support.StaticMethodMatcher;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import org.springframework.aop.support.AopUtils;
+import org.springframework.aop.support.StaticMethodMatcher;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 /**
  * Simple MethodMatcher that looks for a specific Java 5 annotation
@@ -32,8 +32,9 @@ import java.lang.reflect.Proxy;
  * interface, if any, and the corresponding method on the target class).
  *
  * @author Juergen Hoeller
- * @see AnnotationMatchingPointcut
+ * @author Sam Brannen
  * @since 2.0
+ * @see AnnotationMatchingPointcut
  */
 public class AnnotationMethodMatcher extends StaticMethodMatcher {
 
@@ -44,7 +45,6 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 
 	/**
 	 * Create a new AnnotationClassFilter for the given annotation type.
-	 *
 	 * @param annotationType the annotation type to look for
 	 */
 	public AnnotationMethodMatcher(Class<? extends Annotation> annotationType) {
@@ -53,12 +53,11 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 
 	/**
 	 * Create a new AnnotationClassFilter for the given annotation type.
-	 *
 	 * @param annotationType the annotation type to look for
 	 * @param checkInherited whether to also check the superclasses and
-	 *                       interfaces as well as meta-annotations for the annotation type
-	 *                       (i.e. whether to use {@link AnnotationUtils#findAnnotation(Method, Class)}
-	 *                       semantics instead of standard Java {@link Method#isAnnotationPresent})
+	 * interfaces as well as meta-annotations for the annotation type
+	 * (i.e. whether to use {@link AnnotatedElementUtils#hasAnnotation}
+	 * semantics instead of standard Java {@link Method#isAnnotationPresent})
 	 * @since 5.0
 	 */
 	public AnnotationMethodMatcher(Class<? extends Annotation> annotationType, boolean checkInherited) {
@@ -68,13 +67,14 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 	}
 
 
+
 	@Override
-	public boolean matches(Method method, @Nullable Class<?> targetClass) {
+	public boolean matches(Method method, Class<?> targetClass) {
 		if (matchesMethod(method)) {
 			return true;
 		}
 		// Proxy classes never have annotations on their redeclared methods.
-		if (targetClass != null && Proxy.isProxyClass(targetClass)) {
+		if (Proxy.isProxyClass(targetClass)) {
 			return false;
 		}
 		// The method may be on an interface, so let's check on the target class as well.
@@ -83,13 +83,12 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 	}
 
 	private boolean matchesMethod(Method method) {
-		return (this.checkInherited ?
-				(AnnotationUtils.findAnnotation(method, this.annotationType) != null) :
+		return (this.checkInherited ? AnnotatedElementUtils.hasAnnotation(method, this.annotationType) :
 				method.isAnnotationPresent(this.annotationType));
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -97,7 +96,7 @@ public class AnnotationMethodMatcher extends StaticMethodMatcher {
 			return false;
 		}
 		AnnotationMethodMatcher otherMm = (AnnotationMethodMatcher) other;
-		return this.annotationType.equals(otherMm.annotationType);
+		return (this.annotationType.equals(otherMm.annotationType) && this.checkInherited == otherMm.checkInherited);
 	}
 
 	@Override

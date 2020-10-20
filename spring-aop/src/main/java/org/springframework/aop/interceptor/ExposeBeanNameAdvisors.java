@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2012 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package org.springframework.aop.interceptor;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+
 import org.springframework.aop.Advisor;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.beans.factory.NamedBean;
+import org.springframework.lang.Nullable;
 
 /**
  * Convenient methods for creating advisors that may be used when autoproxying beans
@@ -35,8 +37,8 @@ import org.springframework.beans.factory.NamedBean;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @see org.springframework.beans.factory.NamedBean
  * @since 2.0
+ * @see org.springframework.beans.factory.NamedBean
  */
 public abstract class ExposeBeanNameAdvisors {
 
@@ -51,7 +53,6 @@ public abstract class ExposeBeanNameAdvisors {
 	 * Find the bean name for the current invocation. Assumes that an ExposeBeanNameAdvisor
 	 * has been included in the interceptor chain, and that the invocation is exposed
 	 * with ExposeInvocationInterceptor.
-	 *
 	 * @return the bean name (never {@code null})
 	 * @throws IllegalStateException if the bean name has not been exposed
 	 */
@@ -62,8 +63,7 @@ public abstract class ExposeBeanNameAdvisors {
 	/**
 	 * Find the bean name for the given invocation. Assumes that an ExposeBeanNameAdvisor
 	 * has been included in the interceptor chain.
-	 *
-	 * @param mi MethodInvocation that should contain the bean name as an attribute
+	 * @param mi the MethodInvocation that should contain the bean name as an attribute
 	 * @return the bean name (never {@code null})
 	 * @throws IllegalStateException if the bean name has not been exposed
 	 */
@@ -81,8 +81,7 @@ public abstract class ExposeBeanNameAdvisors {
 
 	/**
 	 * Create a new advisor that will expose the given bean name,
-	 * with no introduction
-	 *
+	 * with no introduction.
 	 * @param beanName bean name to expose
 	 */
 	public static Advisor createAdvisorWithoutIntroduction(String beanName) {
@@ -93,7 +92,6 @@ public abstract class ExposeBeanNameAdvisors {
 	 * Create a new advisor that will expose the given bean name, introducing
 	 * the NamedBean interface to make the bean name accessible without forcing
 	 * the target object to be aware of this Spring IoC concept.
-	 *
 	 * @param beanName the bean name to expose
 	 */
 	public static Advisor createAdvisorIntroducingNamedBean(String beanName) {
@@ -113,6 +111,7 @@ public abstract class ExposeBeanNameAdvisors {
 		}
 
 		@Override
+		@Nullable
 		public Object invoke(MethodInvocation mi) throws Throwable {
 			if (!(mi instanceof ProxyMethodInvocation)) {
 				throw new IllegalStateException("MethodInvocation is not a Spring ProxyMethodInvocation: " + mi);
@@ -137,6 +136,7 @@ public abstract class ExposeBeanNameAdvisors {
 		}
 
 		@Override
+		@Nullable
 		public Object invoke(MethodInvocation mi) throws Throwable {
 			if (!(mi instanceof ProxyMethodInvocation)) {
 				throw new IllegalStateException("MethodInvocation is not a Spring ProxyMethodInvocation: " + mi);

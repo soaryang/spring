@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,14 +63,15 @@ public class AdvisorComponentDefinition extends AbstractComponentDefinition {
 		Assert.state(adviceReference != null, "Missing 'adviceBeanName' property");
 
 		if (pointcutDefinition != null) {
-			this.beanReferences = new BeanReference[]{adviceReference};
-			this.beanDefinitions = new BeanDefinition[]{advisorDefinition, pointcutDefinition};
+			this.beanReferences = new BeanReference[] {adviceReference};
+			this.beanDefinitions = new BeanDefinition[] {advisorDefinition, pointcutDefinition};
 			this.description = buildDescription(adviceReference, pointcutDefinition);
-		} else {
+		}
+		else {
 			BeanReference pointcutReference = (BeanReference) pvs.get("pointcut");
 			Assert.state(pointcutReference != null, "Missing 'pointcut' property");
-			this.beanReferences = new BeanReference[]{adviceReference, pointcutReference};
-			this.beanDefinitions = new BeanDefinition[]{advisorDefinition};
+			this.beanReferences = new BeanReference[] {adviceReference, pointcutReference};
+			this.beanDefinitions = new BeanDefinition[] {advisorDefinition};
 			this.description = buildDescription(adviceReference, pointcutReference);
 		}
 	}

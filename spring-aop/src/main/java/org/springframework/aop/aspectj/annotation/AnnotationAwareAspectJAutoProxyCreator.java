@@ -16,6 +16,10 @@
 
 package org.springframework.aop.aspectj.annotation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -23,12 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 /**
- * 完成sping AOP 改变bean 生成代理对象。
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *
@@ -44,8 +43,8 @@ import java.util.regex.Pattern;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @see org.springframework.aop.aspectj.annotation.AspectJAdvisorFactory
  * @since 2.0
+ * @see org.springframework.aop.aspectj.annotation.AspectJAdvisorFactory
  */
 @SuppressWarnings("serial")
 public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {
@@ -121,7 +120,8 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	protected boolean isEligibleAspectBean(String beanName) {
 		if (this.includePatterns == null) {
 			return true;
-		} else {
+		}
+		else {
 			for (Pattern pattern : this.includePatterns) {
 				if (pattern.matcher(beanName).matches()) {
 					return true;

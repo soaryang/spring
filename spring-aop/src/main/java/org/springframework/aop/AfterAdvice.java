@@ -23,8 +23,8 @@ import org.aopalliance.aop.Advice;
  * such as {@link AfterReturningAdvice} and {@link ThrowsAdvice}.
  *
  * @author Juergen Hoeller
- * @see BeforeAdvice
  * @since 2.0.3
+ * @see BeforeAdvice
  */
 public interface AfterAdvice extends Advice {
 

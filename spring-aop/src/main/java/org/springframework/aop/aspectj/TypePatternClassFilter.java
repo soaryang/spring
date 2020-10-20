@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.aop.aspectj;
 
 import org.aspectj.weaver.tools.PointcutParser;
 import org.aspectj.weaver.tools.TypePatternMatcher;
+
 import org.springframework.aop.ClassFilter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -28,6 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
+ * @author Sam Brannen
  * @since 2.0
  */
 public class TypePatternClassFilter implements ClassFilter {
@@ -51,19 +54,12 @@ public class TypePatternClassFilter implements ClassFilter {
 	/**
 	 * Create a fully configured {@link TypePatternClassFilter} using the
 	 * given type pattern.
-	 *
 	 * @param typePattern the type pattern that AspectJ weaver should parse
 	 */
 	public TypePatternClassFilter(String typePattern) {
 		setTypePattern(typePattern);
 	}
 
-	/**
-	 * Return the AspectJ type pattern to match.
-	 */
-	public String getTypePattern() {
-		return this.typePattern;
-	}
 
 	/**
 	 * Set the AspectJ type pattern to match.
@@ -78,7 +74,6 @@ public class TypePatternClassFilter implements ClassFilter {
 	 * This will match the {@code ITestBean} interface and any class
 	 * that implements it.
 	 * <p>These conventions are established by AspectJ, not Spring AOP.
-	 *
 	 * @param typePattern the type pattern that AspectJ weaver should parse
 	 */
 	public void setTypePattern(String typePattern) {
@@ -86,12 +81,19 @@ public class TypePatternClassFilter implements ClassFilter {
 		this.typePattern = typePattern;
 		this.aspectJTypePatternMatcher =
 				PointcutParser.getPointcutParserSupportingAllPrimitivesAndUsingContextClassloaderForResolution().
-						parseTypePattern(replaceBooleanOperators(typePattern));
+				parseTypePattern(replaceBooleanOperators(typePattern));
 	}
 
 	/**
+	 * Return the AspectJ type pattern to match.
+	 */
+	public String getTypePattern() {
+		return this.typePattern;
+	}
+
+
+	/**
 	 * Should the pointcut apply to the given interface or target class?
-	 *
 	 * @param clazz candidate target class
 	 * @return whether the advice should apply to this candidate target class
 	 * @throws IllegalStateException if no {@link #setTypePattern(String)} has been set
@@ -109,8 +111,25 @@ public class TypePatternClassFilter implements ClassFilter {
 	 * <p>This method converts back to {@code &&} for the AspectJ pointcut parser.
 	 */
 	private String replaceBooleanOperators(String pcExpr) {
-		String result = StringUtils.replace(pcExpr, " and ", " && ");
+		String result = StringUtils.replace(pcExpr," and "," && ");
 		result = StringUtils.replace(result, " or ", " || ");
 		return StringUtils.replace(result, " not ", " ! ");
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		return (this == other || (other instanceof TypePatternClassFilter &&
+				ObjectUtils.nullSafeEquals(this.typePattern, ((TypePatternClassFilter) other).typePattern)));
+	}
+
+	@Override
+	public int hashCode() {
+		return ObjectUtils.nullSafeHashCode(this.typePattern);
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getName() + ": " + this.typePattern;
+	}
+
 }

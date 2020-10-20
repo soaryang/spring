@@ -16,13 +16,14 @@
 
 package org.springframework.aop.support;
 
+import java.io.Serializable;
+
 import org.aopalliance.aop.Advice;
+
 import org.springframework.aop.PointcutAdvisor;
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
-
-import java.io.Serializable;
 
 /**
  * Abstract base class for {@link org.springframework.aop.PointcutAdvisor}
@@ -31,14 +32,19 @@ import java.io.Serializable;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @see AbstractGenericPointcutAdvisor
  * @since 1.1.2
+ * @see AbstractGenericPointcutAdvisor
  */
 @SuppressWarnings("serial")
 public abstract class AbstractPointcutAdvisor implements PointcutAdvisor, Ordered, Serializable {
 
 	@Nullable
 	private Integer order;
+
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	@Override
 	public int getOrder() {
@@ -52,10 +58,6 @@ public abstract class AbstractPointcutAdvisor implements PointcutAdvisor, Ordere
 		return Ordered.LOWEST_PRECEDENCE;
 	}
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 	@Override
 	public boolean isPerInstance() {
 		return true;
@@ -63,7 +65,7 @@ public abstract class AbstractPointcutAdvisor implements PointcutAdvisor, Ordere
 
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		if (this == other) {
 			return true;
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,21 @@
 
 package org.springframework.aop.aspectj;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.internal.AroundClosure;
+
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * An implementation of the AspectJ {@link ProceedingJoinPoint} interface
@@ -57,15 +58,11 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 	@Nullable
 	private Object[] args;
 
-	/**
-	 * Lazily initialized signature object
-	 */
+	/** Lazily initialized signature object. */
 	@Nullable
 	private Signature signature;
 
-	/**
-	 * Lazily initialized source location object
-	 */
+	/** Lazily initialized source location object. */
 	@Nullable
 	private SourceLocation sourceLocation;
 
@@ -73,7 +70,6 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 	/**
 	 * Create a new MethodInvocationProceedingJoinPoint, wrapping the given
 	 * Spring ProxyMethodInvocation object.
-	 *
 	 * @param methodInvocation the Spring ProxyMethodInvocation object
 	 */
 	public MethodInvocationProceedingJoinPoint(ProxyMethodInvocation methodInvocation) {
@@ -88,11 +84,13 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 	}
 
 	@Override
+	@Nullable
 	public Object proceed() throws Throwable {
 		return this.methodInvocation.invocableClone().proceed();
 	}
 
 	@Override
+	@Nullable
 	public Object proceed(Object[] arguments) throws Throwable {
 		Assert.notNull(arguments, "Argument array passed to proceed cannot be null");
 		if (arguments.length != this.methodInvocation.getArguments().length) {
@@ -250,7 +248,7 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 		}
 
 		private String toString(boolean includeModifier, boolean includeReturnTypeAndArgs,
-								boolean useLongReturnAndArgumentTypeName, boolean useLongTypeName) {
+				boolean useLongReturnAndArgumentTypeName, boolean useLongTypeName) {
 
 			StringBuilder sb = new StringBuilder();
 			if (includeModifier) {
@@ -272,7 +270,7 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 		}
 
 		private void appendTypes(StringBuilder sb, Class<?>[] types, boolean includeArgs,
-								 boolean useLongReturnAndArgumentTypeName) {
+				boolean useLongReturnAndArgumentTypeName) {
 
 			if (includeArgs) {
 				for (int size = types.length, i = 0; i < size; i++) {
@@ -281,7 +279,8 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 						sb.append(",");
 					}
 				}
-			} else {
+			}
+			else {
 				if (types.length != 0) {
 					sb.append("..");
 				}
@@ -292,7 +291,8 @@ public class MethodInvocationProceedingJoinPoint implements ProceedingJoinPoint,
 			if (type.isArray()) {
 				appendType(sb, type.getComponentType(), useLongTypeName);
 				sb.append("[]");
-			} else {
+			}
+			else {
 				sb.append(useLongTypeName ? type.getName() : type.getSimpleName());
 			}
 		}

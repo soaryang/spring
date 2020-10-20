@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2013 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.aop.support;
 
+import java.io.Serializable;
+import java.util.Arrays;
+
 import org.springframework.aop.ClassFilter;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
-
-import java.io.Serializable;
 
 /**
  * Static utility methods for composing {@link ClassFilter ClassFilters}.
@@ -28,15 +30,15 @@ import java.io.Serializable;
  * @author Rod Johnson
  * @author Rob Harrop
  * @author Juergen Hoeller
+ * @author Sam Brannen
+ * @since 11.11.2003
  * @see MethodMatchers
  * @see Pointcuts
- * @since 11.11.2003
  */
 public abstract class ClassFilters {
 
 	/**
 	 * Match all classes that <i>either</i> (or both) of the given ClassFilters matches.
-	 *
 	 * @param cf1 the first ClassFilter
 	 * @param cf2 the second ClassFilter
 	 * @return a distinct ClassFilter that matches all classes that either
@@ -45,12 +47,11 @@ public abstract class ClassFilters {
 	public static ClassFilter union(ClassFilter cf1, ClassFilter cf2) {
 		Assert.notNull(cf1, "First ClassFilter must not be null");
 		Assert.notNull(cf2, "Second ClassFilter must not be null");
-		return new UnionClassFilter(new ClassFilter[]{cf1, cf2});
+		return new UnionClassFilter(new ClassFilter[] {cf1, cf2});
 	}
 
 	/**
 	 * Match all classes that <i>either</i> (or all) of the given ClassFilters matches.
-	 *
 	 * @param classFilters the ClassFilters to match
 	 * @return a distinct ClassFilter that matches all classes that either
 	 * of the given ClassFilter matches
@@ -62,7 +63,6 @@ public abstract class ClassFilters {
 
 	/**
 	 * Match all classes that <i>both</i> of the given ClassFilters match.
-	 *
 	 * @param cf1 the first ClassFilter
 	 * @param cf2 the second ClassFilter
 	 * @return a distinct ClassFilter that matches all classes that both
@@ -71,12 +71,11 @@ public abstract class ClassFilters {
 	public static ClassFilter intersection(ClassFilter cf1, ClassFilter cf2) {
 		Assert.notNull(cf1, "First ClassFilter must not be null");
 		Assert.notNull(cf2, "Second ClassFilter must not be null");
-		return new IntersectionClassFilter(new ClassFilter[]{cf1, cf2});
+		return new IntersectionClassFilter(new ClassFilter[] {cf1, cf2});
 	}
 
 	/**
 	 * Match all classes that <i>all</i> of the given ClassFilters match.
-	 *
 	 * @param classFilters the ClassFilters to match
 	 * @return a distinct ClassFilter that matches all classes that both
 	 * of the given ClassFilter match
@@ -93,9 +92,9 @@ public abstract class ClassFilters {
 	@SuppressWarnings("serial")
 	private static class UnionClassFilter implements ClassFilter, Serializable {
 
-		private ClassFilter[] filters;
+		private final ClassFilter[] filters;
 
-		public UnionClassFilter(ClassFilter[] filters) {
+		UnionClassFilter(ClassFilter[] filters) {
 			this.filters = filters;
 		}
 
@@ -110,7 +109,7 @@ public abstract class ClassFilters {
 		}
 
 		@Override
-		public boolean equals(Object other) {
+		public boolean equals(@Nullable Object other) {
 			return (this == other || (other instanceof UnionClassFilter &&
 					ObjectUtils.nullSafeEquals(this.filters, ((UnionClassFilter) other).filters)));
 		}
@@ -119,6 +118,12 @@ public abstract class ClassFilters {
 		public int hashCode() {
 			return ObjectUtils.nullSafeHashCode(this.filters);
 		}
+
+		@Override
+		public String toString() {
+			return getClass().getName() + ": " + Arrays.toString(this.filters);
+		}
+
 	}
 
 
@@ -128,9 +133,9 @@ public abstract class ClassFilters {
 	@SuppressWarnings("serial")
 	private static class IntersectionClassFilter implements ClassFilter, Serializable {
 
-		private ClassFilter[] filters;
+		private final ClassFilter[] filters;
 
-		public IntersectionClassFilter(ClassFilter[] filters) {
+		IntersectionClassFilter(ClassFilter[] filters) {
 			this.filters = filters;
 		}
 
@@ -145,7 +150,7 @@ public abstract class ClassFilters {
 		}
 
 		@Override
-		public boolean equals(Object other) {
+		public boolean equals(@Nullable Object other) {
 			return (this == other || (other instanceof IntersectionClassFilter &&
 					ObjectUtils.nullSafeEquals(this.filters, ((IntersectionClassFilter) other).filters)));
 		}
@@ -154,6 +159,12 @@ public abstract class ClassFilters {
 		public int hashCode() {
 			return ObjectUtils.nullSafeHashCode(this.filters);
 		}
+
+		@Override
+		public String toString() {
+			return getClass().getName() + ": " + Arrays.toString(this.filters);
+		}
+
 	}
 
 }

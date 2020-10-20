@@ -151,6 +151,7 @@ public class AnnotatedBeanDefinitionReader {
 	}
 
 	/**
+	 * 通过带有注解的类来获取其他的类
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
 	 *
@@ -234,7 +235,11 @@ public class AnnotatedBeanDefinitionReader {
 							@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 
 		AnnotatedGenericBeanDefinition annotatedGenericBeanDefinition = new AnnotatedGenericBeanDefinition(annotatedClass);
-		if (this.conditionEvaluator.shouldSkip(annotatedGenericBeanDefinition.getMetadata())) {
+
+		//Determine if an item should be skipped based on {@code @Conditional} annotations.
+		//判断注解是否包含Conditional的逻辑处理
+		boolean shouldSkip = this.conditionEvaluator.shouldSkip(annotatedGenericBeanDefinition.getMetadata());
+		if (shouldSkip) {
 			return;
 		}
 		annotatedGenericBeanDefinition.setInstanceSupplier(instanceSupplier);
@@ -246,7 +251,7 @@ public class AnnotatedBeanDefinitionReader {
 		String generateBeanName = this.beanNameGenerator.generateBeanName(annotatedGenericBeanDefinition, this.registry);
 		String beanName = (name != null ? name : generateBeanName);
 
-		//处理通用的注解
+		//处理通用的注解(Lazy /Primary /DependsOn /Role /Description)
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(annotatedGenericBeanDefinition);
 
 		if (qualifiers != null) {
@@ -266,6 +271,7 @@ public class AnnotatedBeanDefinitionReader {
 		}
 		//其实这里也是 BeanDefinition 对象
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(annotatedGenericBeanDefinition, beanName);
+		//非单例情况处理
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		//将bean 放入beanDifinitionMap 中。
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);

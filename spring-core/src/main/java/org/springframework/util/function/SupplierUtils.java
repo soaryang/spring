@@ -14,35 +14,30 @@
  * limitations under the License.
  */
 
-package org.aopalliance.aop;
+package org.springframework.util.function;
+
+import org.springframework.lang.Nullable;
+
+import java.util.function.Supplier;
 
 /**
- * Superclass for all AOP infrastructure exceptions.
- * Unchecked, as such exceptions are fatal and end user
- * code shouldn't be forced to catch them.
+ * Convenience utilities for {@link Supplier} handling.
  *
- * @author Rod Johnson
- * @author Bob Lee
  * @author Juergen Hoeller
+ * @since 5.1
+ * @see SingletonSupplier
  */
-@SuppressWarnings("serial")
-public class AspectException extends RuntimeException {
+public abstract class SupplierUtils {
 
 	/**
-	 * Constructor for AspectException.
-	 * @param message the exception message
+	 * Resolve the given {@code Supplier}, getting its result or immediately
+	 * returning {@code null} if the supplier itself was {@code null}.
+	 * @param supplier the supplier to resolve
+	 * @return the supplier's result, or {@code null} if none
 	 */
-	public AspectException(String message) {
-		super(message);
-	}
-
-	/**
-	 * Constructor for AspectException.
-	 * @param message the exception message
-	 * @param cause the root cause, if any
-	 */
-	public AspectException(String message, Throwable cause) {
-		super(message, cause);
+	@Nullable
+	public static <T> T resolve(@Nullable Supplier<T> supplier) {
+		return (supplier != null ? supplier.get() : null);
 	}
 
 }

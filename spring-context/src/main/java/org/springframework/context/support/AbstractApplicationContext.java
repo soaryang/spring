@@ -608,6 +608,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Validate that all properties marked as required are resolvable:
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		//获取环境变量
 		ConfigurableEnvironment configurableEnvironment = getEnvironment();
 		configurableEnvironment.validateRequiredProperties();
 
@@ -696,7 +697,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			beanFactory.addBeanPostProcessor(loadTimeWeaverAwareProcessor);
 
 			// Set a temporary ClassLoader for type matching.
-			ContextTypeMatchClassLoader contextTypeMatchClassLoader =new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader());
+			ContextTypeMatchClassLoader contextTypeMatchClassLoader = new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader());
 			beanFactory.setTempClassLoader(contextTypeMatchClassLoader);
 		}
 

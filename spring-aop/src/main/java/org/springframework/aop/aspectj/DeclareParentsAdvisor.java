@@ -17,6 +17,7 @@
 package org.springframework.aop.aspectj;
 
 import org.aopalliance.aop.Advice;
+
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.IntroductionAdvisor;
 import org.springframework.aop.IntroductionInterceptor;
@@ -43,10 +44,9 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 
 	/**
 	 * Create a new advisor for this DeclareParents field.
-	 *
 	 * @param interfaceType static field defining the introduction
-	 * @param typePattern   type pattern the introduction is restricted to
-	 * @param defaultImpl   the default implementation class
+	 * @param typePattern type pattern the introduction is restricted to
+	 * @param defaultImpl the default implementation class
 	 */
 	public DeclareParentsAdvisor(Class<?> interfaceType, String typePattern, Class<?> defaultImpl) {
 		this(interfaceType, typePattern,
@@ -55,10 +55,9 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 
 	/**
 	 * Create a new advisor for this DeclareParents field.
-	 *
 	 * @param interfaceType static field defining the introduction
-	 * @param typePattern   type pattern the introduction is restricted to
-	 * @param delegateRef   the delegate implementation object
+	 * @param typePattern type pattern the introduction is restricted to
+	 * @param delegateRef the delegate implementation object
 	 */
 	public DeclareParentsAdvisor(Class<?> interfaceType, String typePattern, Object delegateRef) {
 		this(interfaceType, typePattern, new DelegatingIntroductionInterceptor(delegateRef));
@@ -66,11 +65,10 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 
 	/**
 	 * Private constructor to share common code between impl-based delegate and reference-based delegate
-	 * (cannot use method such as init() to share common code, due the use of final fields)
-	 *
+	 * (cannot use method such as init() to share common code, due the use of final fields).
 	 * @param interfaceType static field defining the introduction
-	 * @param typePattern   type pattern the introduction is restricted to
-	 * @param interceptor   the delegation advice as {@link IntroductionInterceptor}
+	 * @param typePattern type pattern the introduction is restricted to
+	 * @param interceptor the delegation advice as {@link IntroductionInterceptor}
 	 */
 	private DeclareParentsAdvisor(Class<?> interfaceType, String typePattern, IntroductionInterceptor interceptor) {
 		this.advice = interceptor;
@@ -78,7 +76,7 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 
 		// Excludes methods implemented.
 		ClassFilter typePatternFilter = new TypePatternClassFilter(typePattern);
-		ClassFilter exclusion = (clazz -> !introducedInterface.isAssignableFrom(clazz));
+		ClassFilter exclusion = (clazz -> !this.introducedInterface.isAssignableFrom(clazz));
 		this.typePatternClassFilter = ClassFilters.intersection(typePatternFilter, exclusion);
 	}
 
@@ -105,7 +103,7 @@ public class DeclareParentsAdvisor implements IntroductionAdvisor {
 
 	@Override
 	public Class<?>[] getInterfaces() {
-		return new Class<?>[]{this.introducedInterface};
+		return new Class<?>[] {this.introducedInterface};
 	}
 
 }

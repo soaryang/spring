@@ -16,6 +16,8 @@
 
 package org.aopalliance.intercept;
 
+import javax.annotation.Nonnull;
+
 /**
  * Intercepts the construction of a new object.
  *
@@ -41,20 +43,20 @@ package org.aopalliance.intercept;
  *
  * @author Rod Johnson
  */
-public interface ConstructorInterceptor extends Interceptor {
+public interface ConstructorInterceptor extends Interceptor  {
 
 	/**
 	 * Implement this method to perform extra treatments before and
 	 * after the construction of a new object. Polite implementations
 	 * would certainly like to invoke {@link Joinpoint#proceed()}.
-	 *
 	 * @param invocation the construction joinpoint
 	 * @return the newly created object, which is also the result of
 	 * the call to {@link Joinpoint#proceed()}; might be replaced by
 	 * the interceptor
 	 * @throws Throwable if the interceptors or the target object
-	 *                   throws an exception
+	 * throws an exception
 	 */
+	@Nonnull
 	Object construct(ConstructorInvocation invocation) throws Throwable;
 
 }

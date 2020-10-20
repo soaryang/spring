@@ -31,7 +31,6 @@ public class AdvisorEntry implements ParseState.Entry {
 
 	/**
 	 * Creates a new instance of the {@link AdvisorEntry} class.
-	 *
 	 * @param name the bean name of the advisor
 	 */
 	public AdvisorEntry(String name) {

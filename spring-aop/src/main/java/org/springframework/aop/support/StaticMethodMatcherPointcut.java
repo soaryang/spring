@@ -34,10 +34,6 @@ public abstract class StaticMethodMatcherPointcut extends StaticMethodMatcher im
 
 	private ClassFilter classFilter = ClassFilter.TRUE;
 
-	@Override
-	public ClassFilter getClassFilter() {
-		return this.classFilter;
-	}
 
 	/**
 	 * Set the {@link ClassFilter} to use for this pointcut.
@@ -46,6 +42,12 @@ public abstract class StaticMethodMatcherPointcut extends StaticMethodMatcher im
 	public void setClassFilter(ClassFilter classFilter) {
 		this.classFilter = classFilter;
 	}
+
+	@Override
+	public ClassFilter getClassFilter() {
+		return this.classFilter;
+	}
+
 
 	@Override
 	public final MethodMatcher getMethodMatcher() {

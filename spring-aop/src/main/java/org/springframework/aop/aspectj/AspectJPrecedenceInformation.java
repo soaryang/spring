@@ -23,8 +23,8 @@ import org.springframework.core.Ordered;
  * needed to sort advice/advisors by AspectJ's precedence rules.
  *
  * @author Adrian Colyer
- * @see org.springframework.aop.aspectj.autoproxy.AspectJPrecedenceComparator
  * @since 2.0
+ * @see org.springframework.aop.aspectj.autoproxy.AspectJPrecedenceComparator
  */
 public interface AspectJPrecedenceInformation extends Ordered {
 

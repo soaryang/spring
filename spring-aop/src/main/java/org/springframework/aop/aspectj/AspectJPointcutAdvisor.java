@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.aop.aspectj;
 
 import org.aopalliance.aop.Advice;
+
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.PointcutAdvisor;
 import org.springframework.core.Ordered;
@@ -42,8 +43,7 @@ public class AspectJPointcutAdvisor implements PointcutAdvisor, Ordered {
 
 
 	/**
-	 * Create a new AspectJPointcutAdvisor for the given advice
-	 *
+	 * Create a new AspectJPointcutAdvisor for the given advice.
 	 * @param advice the AbstractAspectJAdvice to wrap
 	 */
 	public AspectJPointcutAdvisor(AbstractAspectJAdvice advice) {
@@ -52,17 +52,19 @@ public class AspectJPointcutAdvisor implements PointcutAdvisor, Ordered {
 		this.pointcut = advice.buildSafePointcut();
 	}
 
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
 	@Override
 	public int getOrder() {
 		if (this.order != null) {
 			return this.order;
-		} else {
+		}
+		else {
 			return this.advice.getOrder();
 		}
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
 	}
 
 	@Override
@@ -82,9 +84,8 @@ public class AspectJPointcutAdvisor implements PointcutAdvisor, Ordered {
 
 	/**
 	 * Return the name of the aspect (bean) in which the advice was declared.
-	 *
-	 * @see AbstractAspectJAdvice#getAspectName()
 	 * @since 4.3.15
+	 * @see AbstractAspectJAdvice#getAspectName()
 	 */
 	public String getAspectName() {
 		return this.advice.getAspectName();
@@ -92,7 +93,7 @@ public class AspectJPointcutAdvisor implements PointcutAdvisor, Ordered {
 
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		if (this == other) {
 			return true;
 		}

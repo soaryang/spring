@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2019 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.aop.framework.autoproxy;
 
+import java.util.List;
+
 import org.springframework.aop.Advisor;
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.support.AopUtils;
@@ -24,8 +26,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 /**
  * Generic auto proxy creator that builds AOP proxies for specific beans
@@ -36,11 +36,13 @@ import java.util.List;
  * also override the inherited {@link #shouldSkip} method to exclude certain
  * objects from auto-proxying.
  *
- * <p>Advisors or advices requiring ordering should implement the
+ * <p>Advisors or advices requiring ordering should be annotated with
+ * {@link org.springframework.core.annotation.Order @Order} or implement the
  * {@link org.springframework.core.Ordered} interface. This class sorts
- * Advisors by Ordered order value. Advisors that don't implement the
- * Ordered interface will be considered as unordered; they will appear
- * at the end of the advisor chain in undefined order.
+ * advisors using the {@link AnnotationAwareOrderComparator}. Advisors that are
+ * not annotated with {@code @Order} or don't implement the {@code Ordered}
+ * interface will be considered as unordered; they will appear at the end of the
+ * advisor chain in an undefined order.
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -70,9 +72,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	@Override
 	@Nullable
-	protected Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
+	protected Object[] getAdvicesAndAdvisorsForBean(
+			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
 
-		//获取当前类的advisor list 返回 一堆Advisor
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
@@ -82,9 +84,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	/**
 	 * Find all eligible Advisors for auto-proxying this class.
-	 *
 	 * @param beanClass the clazz to find advisors for
-	 * @param beanName  the name of the currently proxied bean
+	 * @param beanName the name of the currently proxied bean
 	 * @return the empty List, not {@code null},
 	 * if there are no pointcuts or interceptors
 	 * @see #findCandidateAdvisors
@@ -103,7 +104,6 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	/**
 	 * Find all candidate Advisors to use in auto-proxying.
-	 *
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
@@ -114,10 +114,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	/**
 	 * Search the given candidate Advisors to find all Advisors that
 	 * can apply to the specified bean.
-	 *
 	 * @param candidateAdvisors the candidate Advisors
-	 * @param beanClass         the target's bean class
-	 * @param beanName          the target's bean name
+	 * @param beanClass the target's bean class
+	 * @param beanName the target's bean name
 	 * @return the List of applicable Advisors
 	 * @see ProxyCreationContext#getCurrentProxiedBeanName()
 	 */
@@ -127,7 +126,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
-		} finally {
+		}
+		finally {
 			ProxyCreationContext.setCurrentProxiedBeanName(null);
 		}
 	}
@@ -135,7 +135,6 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	/**
 	 * Return whether the Advisor bean with the given name is eligible
 	 * for proxying in the first place.
-	 *
 	 * @param beanName the name of the Advisor bean
 	 * @return whether the bean is eligible
 	 */
@@ -146,7 +145,6 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	/**
 	 * Sort advisors based on ordering. Subclasses may choose to override this
 	 * method to customize the sorting strategy.
-	 *
 	 * @param advisors the source List of Advisors
 	 * @return the sorted List of Advisors
 	 * @see org.springframework.core.Ordered
@@ -164,9 +162,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * <p>The default implementation is empty.
 	 * <p>Typically used to add Advisors that expose contextual information
 	 * required by some of the later advisors.
-	 *
 	 * @param candidateAdvisors the Advisors that have already been identified as
-	 *                          applying to a given bean
+	 * applying to a given bean
 	 */
 	protected void extendAdvisors(List<Advisor> candidateAdvisors) {
 	}

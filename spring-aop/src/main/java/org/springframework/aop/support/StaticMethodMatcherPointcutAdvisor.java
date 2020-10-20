@@ -16,13 +16,14 @@
 
 package org.springframework.aop.support;
 
+import java.io.Serializable;
+
 import org.aopalliance.aop.Advice;
+
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.PointcutAdvisor;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
-
-import java.io.Serializable;
 
 /**
  * Convenient base class for Advisors that are also static pointcuts.
@@ -43,7 +44,6 @@ public abstract class StaticMethodMatcherPointcutAdvisor extends StaticMethodMat
 	/**
 	 * Create a new StaticMethodMatcherPointcutAdvisor,
 	 * expecting bean-style configuration.
-	 *
 	 * @see #setAdvice
 	 */
 	public StaticMethodMatcherPointcutAdvisor() {
@@ -51,7 +51,6 @@ public abstract class StaticMethodMatcherPointcutAdvisor extends StaticMethodMat
 
 	/**
 	 * Create a new StaticMethodMatcherPointcutAdvisor for the given advice.
-	 *
 	 * @param advice the Advice to use
 	 */
 	public StaticMethodMatcherPointcutAdvisor(Advice advice) {
@@ -59,22 +58,23 @@ public abstract class StaticMethodMatcherPointcutAdvisor extends StaticMethodMat
 		this.advice = advice;
 	}
 
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
 
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
 	@Override
-	public Advice getAdvice() {
-		return this.advice;
+	public int getOrder() {
+		return this.order;
 	}
 
 	public void setAdvice(Advice advice) {
 		this.advice = advice;
+	}
+
+	@Override
+	public Advice getAdvice() {
+		return this.advice;
 	}
 
 	@Override

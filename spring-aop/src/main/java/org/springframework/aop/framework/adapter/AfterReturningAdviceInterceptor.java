@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 package org.springframework.aop.framework.adapter;
 
+import java.io.Serializable;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+
 import org.springframework.aop.AfterAdvice;
 import org.springframework.aop.AfterReturningAdvice;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-
-import java.io.Serializable;
 
 /**
  * Interceptor to wrap an {@link org.springframework.aop.AfterReturningAdvice}.
@@ -41,7 +43,6 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 
 	/**
 	 * Create a new AfterReturningAdviceInterceptor for the given advice.
-	 *
 	 * @param advice the AfterReturningAdvice to wrap
 	 */
 	public AfterReturningAdviceInterceptor(AfterReturningAdvice advice) {
@@ -51,6 +52,7 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 
 
 	@Override
+	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		Object retVal = mi.proceed();
 		this.advice.afterReturning(retVal, mi.getMethod(), mi.getArguments(), mi.getThis());

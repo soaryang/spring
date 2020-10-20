@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2017 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.aop.interceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 
+import org.springframework.util.Assert;
+
 /**
  * Simple AOP Alliance {@code MethodInterceptor} that can be introduced
  * in a chain to display verbose trace information about intercepted method
@@ -29,8 +31,8 @@ import org.apache.commons.logging.Log;
  *
  * @author Dmitriy Kopylenko
  * @author Juergen Hoeller
- * @see CustomizableTraceInterceptor
  * @since 1.2
+ * @see CustomizableTraceInterceptor
  */
 @SuppressWarnings("serial")
 public class SimpleTraceInterceptor extends AbstractTraceInterceptor {
@@ -44,7 +46,6 @@ public class SimpleTraceInterceptor extends AbstractTraceInterceptor {
 	/**
 	 * Create a new SimpleTraceInterceptor with dynamic or static logger,
 	 * according to the given flag.
-	 *
 	 * @param useDynamicLogger whether to use a dynamic logger or a static logger
 	 * @see #setUseDynamicLogger
 	 */
@@ -61,7 +62,8 @@ public class SimpleTraceInterceptor extends AbstractTraceInterceptor {
 			Object rval = invocation.proceed();
 			writeToLog(logger, "Exiting " + invocationDescription);
 			return rval;
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			writeToLog(logger, "Exception thrown in " + invocationDescription, ex);
 			throw ex;
 		}
@@ -69,13 +71,14 @@ public class SimpleTraceInterceptor extends AbstractTraceInterceptor {
 
 	/**
 	 * Return a description for the given method invocation.
-	 *
 	 * @param invocation the invocation to describe
 	 * @return the description
 	 */
 	protected String getInvocationDescription(MethodInvocation invocation) {
-		return "method '" + invocation.getMethod().getName() + "' of class [" +
-				invocation.getThis().getClass().getName() + "]";
+		Object target = invocation.getThis();
+		Assert.state(target != null, "Target must not be null");
+		String className = target.getClass().getName();
+		return "method '" + invocation.getMethod().getName() + "' of class [" + className + "]";
 	}
 
 }

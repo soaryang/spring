@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2016 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package org.springframework.aop.interceptor;
 
+import java.io.Serializable;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.PriorityOrdered;
-
-import java.io.Serializable;
+import org.springframework.lang.Nullable;
 
 /**
  * Interceptor that exposes the current {@link org.aopalliance.intercept.MethodInvocation}
@@ -40,11 +42,9 @@ import java.io.Serializable;
  * @author Juergen Hoeller
  */
 @SuppressWarnings("serial")
-public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityOrdered, Serializable {
+public final class ExposeInvocationInterceptor implements MethodInterceptor, PriorityOrdered, Serializable {
 
-	/**
-	 * Singleton instance of this class
-	 */
+	/** Singleton instance of this class. */
 	public static final ExposeInvocationInterceptor INSTANCE = new ExposeInvocationInterceptor();
 
 	/**
@@ -54,7 +54,7 @@ public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityO
 	public static final Advisor ADVISOR = new DefaultPointcutAdvisor(INSTANCE) {
 		@Override
 		public String toString() {
-			return ExposeInvocationInterceptor.class.getName() + ".ADVISOR";
+			return ExposeInvocationInterceptor.class.getName() +".ADVISOR";
 		}
 	};
 
@@ -63,35 +63,40 @@ public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityO
 
 
 	/**
+	 * Return the AOP Alliance MethodInvocation object associated with the current invocation.
+	 * @return the invocation object associated with the current invocation
+	 * @throws IllegalStateException if there is no AOP invocation in progress,
+	 * or if the ExposeInvocationInterceptor was not added to this interceptor chain
+	 */
+	public static MethodInvocation currentInvocation() throws IllegalStateException {
+		MethodInvocation mi = invocation.get();
+		if (mi == null) {
+			throw new IllegalStateException(
+					"No MethodInvocation found: Check that an AOP invocation is in progress and that the " +
+					"ExposeInvocationInterceptor is upfront in the interceptor chain. Specifically, note that " +
+					"advices with order HIGHEST_PRECEDENCE will execute before ExposeInvocationInterceptor! " +
+					"In addition, ExposeInvocationInterceptor and ExposeInvocationInterceptor.currentInvocation() " +
+					"must be invoked from the same thread.");
+		}
+		return mi;
+	}
+
+
+	/**
 	 * Ensures that only the canonical instance can be created.
 	 */
 	private ExposeInvocationInterceptor() {
 	}
 
-	/**
-	 * Return the AOP Alliance MethodInvocation object associated with the current invocation.
-	 *
-	 * @return the invocation object associated with the current invocation
-	 * @throws IllegalStateException if there is no AOP invocation in progress,
-	 *                               or if the ExposeInvocationInterceptor was not added to this interceptor chain
-	 */
-	public static MethodInvocation currentInvocation() throws IllegalStateException {
-		MethodInvocation mi = invocation.get();
-		if (mi == null)
-			throw new IllegalStateException(
-					"No MethodInvocation found: Check that an AOP invocation is in progress, and that the " +
-							"ExposeInvocationInterceptor is upfront in the interceptor chain. Specifically, note that " +
-							"advices with order HIGHEST_PRECEDENCE will execute before ExposeInvocationInterceptor!");
-		return mi;
-	}
-
 	@Override
+	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		MethodInvocation oldInvocation = invocation.get();
 		invocation.set(mi);
 		try {
 			return mi.proceed();
-		} finally {
+		}
+		finally {
 			invocation.set(oldInvocation);
 		}
 	}

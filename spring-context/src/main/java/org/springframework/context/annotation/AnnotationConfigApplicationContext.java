@@ -87,7 +87,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		//调用构造函数，初始化AnnotationConfigApplicationContext
 		this();
-		//将配置类注册到BeanDifinitionMap 中.
+		//将配置类注册到BeanDifinitionMap 中，同时放到register 中
 		register(annotatedClasses);
 		//初始化spring 容器
 		refresh();

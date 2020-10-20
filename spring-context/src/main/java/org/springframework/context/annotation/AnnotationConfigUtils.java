@@ -282,6 +282,7 @@ public class AnnotationConfigUtils {
 		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
 			return definition;
 		}
+		//ScopedProxyMode.TARGET_CLASS是字节码级别多例, 使用一次就会产生一个运行时字节新对象
 		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
 		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass);
 	}

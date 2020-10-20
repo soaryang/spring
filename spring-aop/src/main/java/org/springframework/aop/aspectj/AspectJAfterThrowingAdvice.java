@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2002-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.aop.aspectj;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.aop.AfterAdvice;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+
+import org.springframework.aop.AfterAdvice;
+import org.springframework.lang.Nullable;
 
 /**
  * Spring AOP advice wrapping an AspectJ after-throwing advice method.
@@ -56,10 +58,12 @@ public class AspectJAfterThrowingAdvice extends AbstractAspectJAdvice
 	}
 
 	@Override
+	@Nullable
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
 			return mi.proceed();
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			if (shouldInvokeOnThrowing(ex)) {
 				invokeAdviceMethod(getJoinPointMatch(), null, ex);
 			}

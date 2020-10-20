@@ -16,15 +16,16 @@
 
 package org.springframework.aop.support;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import org.aopalliance.intercept.MethodInvocation;
+
 import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.aop.IntroductionInterceptor;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
-
-import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Convenient implementation of the
@@ -47,9 +48,9 @@ import java.util.WeakHashMap;
  *
  * @author Adrian Colyer
  * @author Juergen Hoeller
+ * @since 2.0
  * @see #suppressInterface
  * @see DelegatingIntroductionInterceptor
- * @since 2.0
  */
 @SuppressWarnings("serial")
 public class DelegatePerTargetObjectIntroductionInterceptor extends IntroductionInfoSupport
@@ -113,16 +114,18 @@ public class DelegatePerTargetObjectIntroductionInterceptor extends Introduction
 	 * that it is introduced into. This method is <strong>never</strong> called for
 	 * {@link MethodInvocation MethodInvocations} on the introduced interfaces.
 	 */
+	@Nullable
 	protected Object doProceed(MethodInvocation mi) throws Throwable {
 		// If we get here, just pass the invocation on.
 		return mi.proceed();
 	}
 
-	private Object getIntroductionDelegateFor(Object targetObject) {
+	private Object getIntroductionDelegateFor(@Nullable Object targetObject) {
 		synchronized (this.delegateMap) {
 			if (this.delegateMap.containsKey(targetObject)) {
 				return this.delegateMap.get(targetObject);
-			} else {
+			}
+			else {
 				Object delegate = createNewDelegate();
 				this.delegateMap.put(targetObject, delegate);
 				return delegate;
@@ -133,7 +136,8 @@ public class DelegatePerTargetObjectIntroductionInterceptor extends Introduction
 	private Object createNewDelegate() {
 		try {
 			return ReflectionUtils.accessibleConstructor(this.defaultImplType).newInstance();
-		} catch (Throwable ex) {
+		}
+		catch (Throwable ex) {
 			throw new IllegalArgumentException("Cannot create default implementation for '" +
 					this.interfaceType.getName() + "' mixin (" + this.defaultImplType.getName() + "): " + ex);
 		}

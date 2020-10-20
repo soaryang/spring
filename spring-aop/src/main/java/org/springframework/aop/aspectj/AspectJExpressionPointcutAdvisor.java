@@ -33,22 +33,23 @@ public class AspectJExpressionPointcutAdvisor extends AbstractGenericPointcutAdv
 
 	private final AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
 
-	@Nullable
-	public String getExpression() {
-		return this.pointcut.getExpression();
-	}
 
 	public void setExpression(@Nullable String expression) {
 		this.pointcut.setExpression(expression);
 	}
 
 	@Nullable
-	public String getLocation() {
-		return this.pointcut.getLocation();
+	public String getExpression() {
+		return this.pointcut.getExpression();
 	}
 
 	public void setLocation(@Nullable String location) {
 		this.pointcut.setLocation(location);
+	}
+
+	@Nullable
+	public String getLocation() {
+		return this.pointcut.getLocation();
 	}
 
 	public void setParameterNames(String... names) {
