@@ -131,7 +131,9 @@ class ConfigurationClassBeanDefinitionReader {
 		}
 
 		loadBeanDefinitionsFromImportedResources(configClass.getImportedResources());
-		loadBeanDefinitionsFromRegistrars(configClass.getImportBeanDefinitionRegistrars());
+		//将import 的类放入到bean 中
+		Map<ImportBeanDefinitionRegistrar, AnnotationMetadata> importBeanDefinitionRegistrarAnnotationMetadataMap = configClass.getImportBeanDefinitionRegistrars();
+		loadBeanDefinitionsFromRegistrars(importBeanDefinitionRegistrarAnnotationMetadataMap);
 	}
 
 	/**

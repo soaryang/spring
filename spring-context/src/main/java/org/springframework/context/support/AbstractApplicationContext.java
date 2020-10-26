@@ -702,6 +702,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
+
+		//基础类放入到容器中。ConfigurableEnvironment/
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			ConfigurableEnvironment configurableEnvironment = getEnvironment();
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, configurableEnvironment);
@@ -800,8 +802,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void initApplicationEventMulticaster() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
-			this.applicationEventMulticaster =
-					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
+			this.applicationEventMulticaster = beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}

@@ -9,7 +9,7 @@ public class Test {
 
 		System.out.println(annotationConfigApplicationContext);
 		//Student student = (Student) annotationConfigApplicationContext.getBean("student");
-		//Student student =  annotationConfigApplicationContext.getBean(Student.class);
+		//Student student =  annotationConfigApp licationContext.getBean(Student.class);
 		//Student student = (Student) annotationConfigApplicationContext.getBean(Student.class);
 		//student.show();
 
