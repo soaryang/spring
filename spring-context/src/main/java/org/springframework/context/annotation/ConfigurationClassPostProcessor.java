@@ -206,6 +206,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		}
 		this.registriesPostProcessed.add(registryId);
 
+		//beanDefinition 放入到map 中
 		processConfigBeanDefinitions(registry);
 	}
 

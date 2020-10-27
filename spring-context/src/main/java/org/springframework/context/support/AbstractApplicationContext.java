@@ -745,8 +745,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
 		if (beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
-			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
-			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
+			LoadTimeWeaverAwareProcessor loadTimeWeaverAwareProcessor = new LoadTimeWeaverAwareProcessor(beanFactory);
+			beanFactory.addBeanPostProcessor(loadTimeWeaverAwareProcessor);
+			ClassLoader classLoader = new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader());
+			beanFactory.setTempClassLoader(classLoader);
 		}
 	}
 
@@ -768,6 +770,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
 			//messageSource 对应的bean
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
+
 			// Make MessageSource aware of parent MessageSource.
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
@@ -934,7 +937,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		getLifecycleProcessor().onRefresh();
 
 		// Publish the final event.
-		publishEvent(new ContextRefreshedEvent(this));
+		ContextRefreshedEvent contextRefreshedEvent = new ContextRefreshedEvent(this);
+		publishEvent(contextRefreshedEvent);
 
 		// Participate in LiveBeansView MBean, if active.
 		LiveBeansView.registerApplicationContext(this);
