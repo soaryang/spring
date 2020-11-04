@@ -1,5 +1,6 @@
 package com.yangtengfei.springframework;
 
+import com.yangtengfei.springframework.lazy.LazyBean;
 import com.yangtengfei.springframework.user.UserDao;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -12,8 +13,9 @@ public class Test {
 		//Student student =  annotationConfigApp licationContext.getBean(Student.class);
 		//Student student = (Student) annotationConfigApplicationContext.getBean(Student.class);
 		//student.show();
-
 		AppConfig userDao = (AppConfig) annotationConfigApplicationContext.getBean("appConfig");
+		LazyBean lazyBean = annotationConfigApplicationContext.getBean(LazyBean.class);
+		lazyBean.show();
 		userDao.show();
 	}
 }

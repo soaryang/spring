@@ -234,6 +234,8 @@ public class AnnotationConfigUtils {
 
 	static void processCommonDefinitionAnnotations(AnnotatedBeanDefinition annotatedBeanDefinition, AnnotatedTypeMetadata metadata) {
 		//获取懒加载信息
+		//没加注解之前主要容器启动就会实例化bean
+		//加完Lazy注解后，等调用的时候再初始化bean
 		AnnotationAttributes lazy = attributesFor(metadata, Lazy.class);
 		if (lazy != null) {
 			boolean isLazy = lazy.getBoolean("value");
@@ -241,14 +243,17 @@ public class AnnotationConfigUtils {
 		} else if (annotatedBeanDefinition.getMetadata() != metadata) {
 			lazy = attributesFor(annotatedBeanDefinition.getMetadata(), Lazy.class);
 			if (lazy != null) {
-				annotatedBeanDefinition.setLazyInit(lazy.getBoolean("value"));
+				boolean isLazy = lazy.getBoolean("value");
+				annotatedBeanDefinition.setLazyInit(isLazy);
 			}
 		}
+
 		//确定基础元素是否具Primary注解
 		boolean isPrimaryAnnotated = metadata.isAnnotated(Primary.class.getName());
 		if (isPrimaryAnnotated) {
 			annotatedBeanDefinition.setPrimary(true);
 		}
+
 		//定义Bean初始化及销毁时的顺序
 		AnnotationAttributes dependsOn = attributesFor(metadata, DependsOn.class);
 		if (dependsOn != null) {

@@ -38,6 +38,12 @@ import java.util.*;
  */
 final class PostProcessorRegistrationDelegate {
 
+	/**
+	 * 方法用来找出所有beanFactory后置处理器，并且调用这些处理器来改变bean的定义。
+	 *
+	 * @param beanFactory
+	 * @param beanFactoryPostProcessors
+	 */
 	public static void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
@@ -46,6 +52,7 @@ final class PostProcessorRegistrationDelegate {
 		// 1.判断beanFactory是否为BeanDefinitionRegistry，beanFactory为DefaultListableBeanFactory,
 		// 而DefaultListableBeanFactory实现了BeanDefinitionRegistry接口，因此这边为true
 		if (beanFactory instanceof BeanDefinitionRegistry) {
+
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 
 			// 用于存放普通的BeanFactoryPostProcessor
@@ -56,6 +63,7 @@ final class PostProcessorRegistrationDelegate {
 
 			// 2.首先处理入参中的beanFactoryPostProcessors
 			// 遍历所有的beanFactoryPostProcessors, 将BeanDefinitionRegistryPostProcessor和普通BeanFactoryPostProcessor区分开
+			//BeanFactoryPostProcessor 处理BeanDefinitionMap 中的BeanDefinition
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					// 2.1 如果是BeanDefinitionRegistryPostProcessor
@@ -149,8 +157,7 @@ final class PostProcessorRegistrationDelegate {
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let the bean factory post-processors apply to them!
-		String[] postProcessorNames =
-				beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
+		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanFactoryPostProcessor.class, true, false);
 
 		// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
