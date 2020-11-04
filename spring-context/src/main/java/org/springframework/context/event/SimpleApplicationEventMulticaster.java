@@ -25,6 +25,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ErrorHandler;
 
+import java.util.Collection;
 import java.util.concurrent.Executor;
 
 /**
@@ -130,7 +131,9 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
-		for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+		Collection<ApplicationListener<?>> applicationListenerList = getApplicationListeners(event, type);
+		//获取所有的ApplicationListener 然后执行onApplicationEvent 方法
+		for (final ApplicationListener<?> listener : applicationListenerList) {
 			Executor executor = getTaskExecutor();
 			if (executor != null) {
 				executor.execute(() -> invokeListener(listener, event));
